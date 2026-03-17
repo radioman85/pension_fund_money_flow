@@ -69,15 +69,15 @@ def main():
         for label in labels
     ]
 
-    sections = 5
+    sections = 4
 
     node_positions = {
-        f"{p1.name} Lohn": (0.00, 0.25),
+        f"{p1.name} Lohn": (0.01, 0.25),
         f"{p1.name} PK-Abzug": (1/sections, 0.01),
         f"{p1.name} Wohnen - Miete": (1/sections, 0.1),
         f"{p1.name} Div. Ausgaben": (1/sections, 0.28),
         f"{p1.name} Sparen": (2/sections, 0.45),
-        f"{p2.name} Lohn": (0.00, 1.2),
+        f"{p2.name} Lohn": (0.01, 0.77),
         f"{p2.name} PK-Abzug": (1/sections, 0.55),
         f"{p2.name} Wohnen - Eigentum": (1/sections, 0.65),
         f"{p2.name} Div. Ausgaben": (1/sections, 0.83),
@@ -88,8 +88,8 @@ def main():
         "PK Personalkosten": (4/sections, 0.1),
         "Eigentum Immo Amort": (3/sections, 0.72),
         "Bank Rendite": (3/sections, 0.62),
-        f"{p1.name} Sparen Total": (5/sections, 0.45),
-        f"{p2.name} Sparen Total": (5/sections, 0.99)
+        f"{p1.name} Sparen Total": (4/sections, 0.45),
+        f"{p2.name} Sparen Total": (4/sections, 0.99)
     }
 
     missing_nodes = [label for label in labels if label not in node_positions]
@@ -122,7 +122,7 @@ def main():
         ]
     )
 
-    fig.update_layout(title_text="Sankey from Mermaid Data", font_size=10, height=900)
+    fig.update_layout(title_text="Real Estate vs. Pension Funds - How the money flows", font_size=10, height=900)
     fig.show()
 
 
