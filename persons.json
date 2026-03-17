@@ -1,0 +1,82 @@
+{
+    "persons": [
+        {
+            "name": "Person-1",
+            "credentials": {
+                "username": "person1"
+            },
+            "incomes": {
+                "Lohn": 7800
+            },
+            "expenses": [
+                {
+                    "title": "Pens.-Abzug",
+                    "description": "Pensionskassenabzug",
+                    "amount": 800,
+                    "priority": 1,
+                    "category": "retirement"
+                },
+                {
+                    "title": "Wohnen - Miete",
+                    "description": "Mietkosten",
+                    "amount": 2000,
+                    "priority": 1,
+                    "category": "housing"
+                },
+                {
+                    "title": "Div. Ausgaben",
+                    "description": "Diverse Ausgaben",
+                    "amount": 4000,
+                    "priority": 1,
+                    "category": "living"
+                },
+                {
+                    "title": "Sparen",
+                    "description": "Monatliches Sparen",
+                    "amount": 1000,
+                    "priority": 2,
+                    "category": "savings"
+                }
+            ]
+        },
+        {
+            "name": "Person-2",
+            "credentials": {
+                "username": "person2"
+            },
+            "incomes": {
+                "Lohn": 7800
+            },
+            "expenses": [
+                {
+                    "title": "Pens.-Abzug",
+                    "description": "Pensionskassenabzug",
+                    "amount": 800,
+                    "priority": 1,
+                    "category": "retirement"
+                },
+                {
+                    "title": "Wohnen - Eigentum",
+                    "description": "Kosten rund um Wohneigentum",
+                    "amount": 2000,
+                    "priority": 1,
+                    "category": "housing"
+                },
+                {
+                    "title": "Div. Ausgaben",
+                    "description": "Weitere Fixausgaben",
+                    "amount": 4000,
+                    "priority": 1,
+                    "category": "living"
+                },
+                {
+                    "title": "Sparen",
+                    "description": "Monatliches Sparen",
+                    "amount": 1000,
+                    "priority": 2,
+                    "category": "savings"
+                }
+            ]
+        }
+    ]
+}
