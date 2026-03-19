@@ -103,7 +103,7 @@ def main():
     fig = go.Figure(
         data=[
             go.Sankey(
-                arrangement="fixed",
+                arrangement="freeform",
                 node=dict(
                     pad=16,
                     thickness=16,
