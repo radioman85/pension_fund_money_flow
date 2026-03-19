@@ -5,6 +5,9 @@ def main():
     def node(label, x, y, color=None):
         return {"label": label, "x": x, "y": y, "color": color}
 
+    def flow(source, target, amount, color=None):
+        return {"source": source, "target": target, "amount": amount, "color": color}
+
     persons = load_persons_from_file()
     if len(persons) < 2:
         raise ValueError("At least 2 persons are required in persons.json")
@@ -14,56 +17,56 @@ def main():
 
 
     flows = [
-        (f"{p1.name} Lohn", f"{p1.name} PK-Abzug", p1.expenses.retirement.amount),
-        (f"{p1.name} Lohn", f"{p1.name} Wohnen - Miete", p1.expenses.housing.amount),
-        (f"{p1.name} Lohn", f"{p1.name} Div. Ausgaben", p1.expenses.living.amount),
-        (f"{p1.name} Lohn", f"{p1.name} Sparen", p1.expenses.savings.amount),
-        (f"{p1.name} Wohnen - Miete", "PK Rendite", 1000),
-        (f"{p1.name} PK-Abzug", "PK Einnahmen", 800),
-        (f"{p1.name} Wohnen - Miete", "PK Immo Amort", 1000),
+        flow(f"{p1.name} Lohn", f"{p1.name} PK-Abzug", p1.expenses.retirement.amount),
+        flow(f"{p1.name} Lohn", f"{p1.name} Wohnen - Miete", p1.expenses.housing.amount),
+        flow(f"{p1.name} Lohn", f"{p1.name} Div. Ausgaben", p1.expenses.living.amount),
+        flow(f"{p1.name} Lohn", f"{p1.name} Sparen", p1.expenses.savings.amount),
+        flow(f"{p1.name} Wohnen - Miete", "PK Rendite", 1000, "orange"),
+        flow(f"{p1.name} PK-Abzug", "PK Einnahmen", 800),
+        flow(f"{p1.name} Wohnen - Miete", "PK Immo Amort", 1000),
 
-        (f"{p2.name} Lohn", f"{p2.name} PK-Abzug", p2.expenses.retirement.amount),
-        (f"{p2.name} Lohn", f"{p2.name} Wohnen - Eigentum", p2.expenses.housing.amount),
-        (f"{p2.name} Wohnen - Eigentum", f"{p2.name} Sparen", 500),
-        (f"{p2.name} Wohnen - Eigentum", "Eigentum Immo Amort", 1000),
-        (f"{p2.name} Wohnen - Eigentum", "Bank Rendite", 500),
-        (f"{p2.name} Lohn", f"{p2.name} Div. Ausgaben", p2.expenses.living.amount),
-        (f"{p2.name} Lohn", f"{p2.name} Sparen", p2.expenses.savings.amount),
-        (f"{p2.name} PK-Abzug", "PK Einnahmen", 800),
+        flow(f"{p2.name} Lohn", f"{p2.name} PK-Abzug", p2.expenses.retirement.amount),
+        flow(f"{p2.name} Lohn", f"{p2.name} Wohnen - Eigentum", p2.expenses.housing.amount),
+        flow(f"{p2.name} Wohnen - Eigentum", f"{p2.name} Sparen", 500, "green"),
+        flow(f"{p2.name} Wohnen - Eigentum", "Eigentum Immo Amort", 1000),
+        flow(f"{p2.name} Wohnen - Eigentum", "Bank Rendite", 500, "crimson"),
+        flow(f"{p2.name} Lohn", f"{p2.name} Div. Ausgaben", p2.expenses.living.amount),
+        flow(f"{p2.name} Lohn", f"{p2.name} Sparen", p2.expenses.savings.amount),
+        flow(f"{p2.name} PK-Abzug", "PK Einnahmen", 800),
 
-        (f"{p1.name} Sparen", f"{p1.name} Sparen Total", p1.expenses.savings.amount),
-        (f"{p2.name} Sparen", f"{p2.name} Sparen Total", p2.expenses.savings.amount+500),
+        flow(f"{p1.name} Sparen", f"{p1.name} Sparen Total", p1.expenses.savings.amount),
+        flow(f"{p2.name} Sparen", f"{p2.name} Sparen Total", p2.expenses.savings.amount + 500),
 
-        ("PK Rendite", f"{p1.name} Sparen Total", 333),
-        ("PK Rendite", f"{p2.name} Sparen Total", 333),
-        ("PK Rendite", "PK Personalkosten", 334),
+        flow("PK Rendite", f"{p1.name} Sparen Total", 333),
+        flow("PK Rendite", f"{p2.name} Sparen Total", 333),
+        flow("PK Rendite", "PK Personalkosten", 334),
     ]
     
     labels = []
-    for source_label, target_label, _ in flows:
+    for f in flows:
+        source_label = f["source"]
+        target_label = f["target"]
         if source_label not in labels:
             labels.append(source_label)
         if target_label not in labels:
             labels.append(target_label)
 
     label_to_index = {label: index for index, label in enumerate(labels)}
-    source = [label_to_index[source_label] for source_label, _, _ in flows]
-    target = [label_to_index[target_label] for _, target_label, _ in flows]
-    value = [amount for _, _, amount in flows]
+    source = [label_to_index[f["source"]] for f in flows]
+    target = [label_to_index[f["target"]] for f in flows]
+    value = [f["amount"] for f in flows]
 
-    highlight_flow_colors = {
-        (f"{p1.name} Wohnen - Miete", "PK Rendite"): "orange",
-        (f"{p2.name} Wohnen - Eigentum", "Bank Rendite"): "crimson",
-        (f"{p2.name} Wohnen - Eigentum", f"{p2.name} Sparen"): "green",
-    }
     flow_colors = [
-        highlight_flow_colors.get((source_label, target_label), "rgba(160,160,160,0.35)")
-        for source_label, target_label, _ in flows
+        f["color"] if f["color"] is not None else "rgba(160,160,160,0.35)"
+        for f in flows
     ]
 
     incoming_totals = {label: 0 for label in labels}
     outgoing_totals = {label: 0 for label in labels}
-    for source_label, target_label, amount in flows:
+    for f in flows:
+        source_label = f["source"]
+        target_label = f["target"]
+        amount = f["amount"]
         outgoing_totals[source_label] += amount
         incoming_totals[target_label] += amount
 
