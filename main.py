@@ -2,6 +2,9 @@ def main():
     import plotly.graph_objects as go
     from person import load_persons_from_file
 
+    def node(label, x, y):
+        return {"label": label, "x": x, "y": y}
+
     persons = load_persons_from_file()
     if len(persons) < 2:
         raise ValueError("At least 2 persons are required in persons.json")
@@ -71,26 +74,38 @@ def main():
 
     sections = 4
 
-    node_positions = {
-        f"{p1.name} Lohn": (0.01, 0.25),
-        f"{p1.name} PK-Abzug": (1/sections, 0.01),
-        f"{p1.name} Wohnen - Miete": (1/sections, 0.1),
-        f"{p1.name} Div. Ausgaben": (1/sections, 0.28),
-        f"{p1.name} Sparen": (2/sections, 0.45),
-        f"{p2.name} Lohn": (0.01, 0.77),
-        f"{p2.name} PK-Abzug": (1/sections, 0.55),
-        f"{p2.name} Wohnen - Eigentum": (1/sections, 0.65),
-        f"{p2.name} Div. Ausgaben": (1/sections, 0.83),
-        f"{p2.name} Sparen": (2/sections, 0.99),
-        "PK Einnahmen": (3/sections, 0.20),
-        "PK Rendite": (3/sections, 0.12),
-        "PK Immo Amort": (3/sections, 0.34),
-        "PK Personalkosten": (4/sections, 0.1),
-        "Eigentum Immo Amort": (3/sections, 0.72),
-        "Bank Rendite": (3/sections, 0.62),
-        f"{p1.name} Sparen Total": (4/sections, 0.45),
-        f"{p2.name} Sparen Total": (4/sections, 0.99)
-    }
+    nodes = [
+        node(f"{p1.name} Lohn", 0.01, 0.25),
+        node(f"{p1.name} PK-Abzug", 1 / sections, 0.01),
+        node(f"{p1.name} Wohnen - Miete", 1 / sections, 0.1),
+        node(f"{p1.name} Div. Ausgaben", 1 / sections, 0.28),
+        node(f"{p1.name} Sparen", 2 / sections, 0.45),
+        node(f"{p2.name} Lohn", 0.01, 0.77),
+        node(f"{p2.name} PK-Abzug", 1 / sections, 0.55),
+        node(f"{p2.name} Wohnen - Eigentum", 1 / sections, 0.65),
+        node(f"{p2.name} Div. Ausgaben", 1 / sections, 0.83),
+        node(f"{p2.name} Sparen", 2 / sections, 0.99),
+        node("PK Einnahmen", 3 / sections, 0.20),
+        node("PK Rendite", 3 / sections, 0.12),
+        node("PK Immo Amort", 3 / sections, 0.34),
+        node("PK Personalkosten", 4 / sections, 0.1),
+        node("Eigentum Immo Amort", 3 / sections, 0.72),
+        node("Bank Rendite", 3 / sections, 0.62),
+        node(f"{p1.name} Sparen Total", 4 / sections, 0.45),
+        node(f"{p2.name} Sparen Total", 4 / sections, 0.99),
+    ]
+
+    duplicate_nodes = []
+    seen_node_labels = set()
+    for n in nodes:
+        if n["label"] in seen_node_labels:
+            duplicate_nodes.append(n["label"])
+        seen_node_labels.add(n["label"])
+
+    if duplicate_nodes:
+        raise ValueError(f"Duplicate node definitions found: {', '.join(sorted(set(duplicate_nodes)))}")
+
+    node_positions = {n["label"]: (n["x"], n["y"]) for n in nodes}
 
     missing_nodes = [label for label in labels if label not in node_positions]
     if missing_nodes:
