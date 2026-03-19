@@ -2,8 +2,8 @@ def main():
     import plotly.graph_objects as go
     from person import load_persons_from_file
 
-    def node(label, x, y):
-        return {"label": label, "x": x, "y": y}
+    def node(label, x, y, color=None):
+        return {"label": label, "x": x, "y": y, "color": color}
 
     persons = load_persons_from_file()
     if len(persons) < 2:
@@ -74,25 +74,33 @@ def main():
 
     sections = 4
 
+    color_income = "#1f77b4"
+    color_retirement = "#9467bd"
+    color_housing = "#ff7f0e"
+    color_living = "#d62728"
+    color_savings = "#2ca02c"
+    color_investment = "#17becf"
+    color_total = "#bcbd22"
+
     nodes = [
-        node(f"{p1.name} Lohn", 0.01, 0.25),
-        node(f"{p1.name} PK-Abzug", 1 / sections, 0.01),
-        node(f"{p1.name} Wohnen - Miete", 1 / sections, 0.1),
-        node(f"{p1.name} Div. Ausgaben", 1 / sections, 0.28),
-        node(f"{p1.name} Sparen", 2 / sections, 0.45),
-        node(f"{p2.name} Lohn", 0.01, 0.77),
-        node(f"{p2.name} PK-Abzug", 1 / sections, 0.55),
-        node(f"{p2.name} Wohnen - Eigentum", 1 / sections, 0.65),
-        node(f"{p2.name} Div. Ausgaben", 1 / sections, 0.83),
-        node(f"{p2.name} Sparen", 2 / sections, 0.99),
-        node("PK Einnahmen", 3 / sections, 0.20),
-        node("PK Rendite", 3 / sections, 0.12),
-        node("PK Immo Amort", 3 / sections, 0.34),
-        node("PK Personalkosten", 4 / sections, 0.1),
-        node("Eigentum Immo Amort", 3 / sections, 0.72),
-        node("Bank Rendite", 3 / sections, 0.62),
-        node(f"{p1.name} Sparen Total", 4 / sections, 0.45),
-        node(f"{p2.name} Sparen Total", 4 / sections, 0.99),
+        node(f"{p1.name} Lohn", 0.01, 0.25, color_income),
+        node(f"{p1.name} PK-Abzug", 1 / sections, 0.01, color_retirement),
+        node(f"{p1.name} Wohnen - Miete", 1 / sections, 0.1, color_housing),
+        node(f"{p1.name} Div. Ausgaben", 1 / sections, 0.28, color_living),
+        node(f"{p1.name} Sparen", 2 / sections, 0.45, color_savings),
+        node(f"{p2.name} Lohn", 0.01, 0.77, color_income),
+        node(f"{p2.name} PK-Abzug", 1 / sections, 0.55, color_retirement),
+        node(f"{p2.name} Wohnen - Eigentum", 1 / sections, 0.65, color_housing),
+        node(f"{p2.name} Div. Ausgaben", 1 / sections, 0.83, color_living),
+        node(f"{p2.name} Sparen", 2 / sections, 0.99, color_savings),
+        node("PK Einnahmen", 3 / sections, 0.20, color_retirement),
+        node("PK Rendite", 3 / sections, 0.12, color_investment),
+        node("PK Immo Amort", 3 / sections, 0.34, color_housing),
+        node("PK Personalkosten", 4 / sections, 0.1, color_living),
+        node("Eigentum Immo Amort", 3 / sections, 0.72, color_housing),
+        node("Bank Rendite", 3 / sections, 0.62, color_investment),
+        node(f"{p1.name} Sparen Total", 4 / sections, 0.45, color_total),
+        node(f"{p2.name} Sparen Total", 4 / sections, 0.99, color_total),
     ]
 
     duplicate_nodes = []
@@ -105,7 +113,8 @@ def main():
     if duplicate_nodes:
         raise ValueError(f"Duplicate node definitions found: {', '.join(sorted(set(duplicate_nodes)))}")
 
-    node_positions = {n["label"]: (n["x"], n["y"]) for n in nodes}
+    node_definitions = {n["label"]: n for n in nodes}
+    node_positions = {label: (n["x"], n["y"]) for label, n in node_definitions.items()}
 
     missing_nodes = [label for label in labels if label not in node_positions]
     if missing_nodes:
@@ -114,6 +123,10 @@ def main():
 
     node_x = [node_positions[label][0] for label in labels]
     node_y = [node_positions[label][1] for label in labels]
+    node_colors = [
+        node_definitions[label]["color"] if node_definitions[label]["color"] is not None else "rgba(31,119,180,0.8)"
+        for label in labels
+    ]
 
     fig = go.Figure(
         data=[
@@ -124,6 +137,7 @@ def main():
                     thickness=16,
                     line=dict(color="black", width=0.5),
                     label=display_labels,
+                    color=node_colors,
                     x=node_x,
                     y=node_y,
                 ),
